@@ -41,7 +41,7 @@ with col2:
         action, level = ai_orchestrator({'temp': 100 + i, 'fatigue': 5 + i/2})
         with placeholder.container():
             if level == "CRITICAL":
-                st.error(f" {action}")
+                st.error(f"🚨 {action}")
             else:
                 st.success(f"✅ {action}")
         time.sleep(1)
