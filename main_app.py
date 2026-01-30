@@ -4,75 +4,57 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # 1. Page Config
-st.set_page_config(page_title="HSE Global Director Intelligence", layout="wide")
+st.set_page_config(page_title="Mining Executive Hub", layout="wide")
 
-# 2. Executive Theme Styling
+# 2. Advanced CSS for Professional UI
 st.markdown("""
     <style>
-    .main { background-color: #f1f5f9; }
-    [data-testid="stMetricValue"] { color: #1e293b; font-weight: 700; }
-    .stPlotlyChart { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    .main { background-color: #f8fafc; }
+    .stMetric { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+    .status-active { color: #10b981; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. Data Engine (Enhanced for Sophistication)
+# 3. Enhanced Data Engine
 @st.cache_data
-def get_advanced_data():
+def get_mining_data():
     return pd.DataFrame({
-        'Asset': ['Pilbara Iron', 'Oyu Tolgoi', 'Escondida', 'Olympic Dam', 'Antamina'],
-        'Compliance_Score': [99.2, 97.5, 94.8, 91.2, 88.5],
-        'Risk_Level': [1.2, 2.1, 3.5, 4.2, 5.0],
-        'Investment_ESG': [450, 320, 580, 210, 190], # in Millions
-        'AI_Forecast_Trend': [0.2, -0.5, 1.1, 0.8, 2.3]
+        'Тоног_төхөөрөмж': ['CAT 797F Truck', 'Komatsu PC8000', 'P&H 4100XPC', 'Crushing Plant', 'Conveyor System'],
+        'Төлөв': ['Ажиллаж байна', 'Засвартай', 'Ажиллаж байна', 'Ажиллаж байна', 'Сатсан'],
+        'Гүйцэтгэл': [95, 0, 92, 88, 0],
+        'Эрсдэл': [0.1, 0.8, 0.2, 0.4, 0.9],
+        'Шатахуун_Зарцуулалт': [850, 0, 1200, 450, 150]
     })
 
-df = get_advanced_data()
+df_fleet = get_mining_data()
 
-# 4. Header Section
-st.title("Strategic HSE & ESG Intelligence")
-st.caption("Operational Decision Support System | 2026 Fiscal Year")
+# 4. Header with Global Identity
+st.title("Strategic Mining & HSE Control Hub")
+st.write("Глобал уурхайн үйл ажиллагаа болон техник төхөөрөмжийн нэгдсэн удирдлага")
 
-# 5. High-Level Metrics
-m1, m2, m3, m4 = st.columns(4)
-with m1:
-    st.metric("Group Safety Index", "94.2%", "↑ 0.4%")
-with m2:
-    st.metric("Total Managed Assets", "5 Global Units")
-with m3:
-    st.metric("ESG Investment", "$1.75B", "FY26 Projected")
-with m4:
-    st.metric("Risk Variance", "Stable", delta_color="normal")
+# 5. Global Navigation (Tabs)
+tab1, tab2, tab3 = st.tabs(["📊 Ерөнхий хяналт", "🚜 Техник төхөөрөмжийн бүтэц", "⚠️ Эрсдэлийн удирдлага"])
 
-st.write("---")
+with tab1:
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Нийт ашигт ажиллагаа", "89.4%", "↑ 2.1%")
+    m2.metric("Сул зогсолт", "4.2 цаг", "-1.5", delta_color="inverse")
+    m3.metric("Хөдөлмөрийн аюулгүй байдал", "100%", "Тогтвортой")
+    m4.metric("Байгаль орчны нийцэл (ESG)", "98.1%", "↑ 0.5%")
+    
+    st.write("---")
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.subheader("Салбар нэгжүүдийн гүйцэтгэлийн харьцуулалт")
+        fig = px.bar(df_fleet, x='Тоног_төхөөрөмж', y='Гүйцэтгэл', color='Гүйцэтгэл', 
+                     color_continuous_scale='Blues', template='plotly_white')
+        st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        st.subheader("Шуурхай шийдвэр гаргалт")
+        action = st.selectbox("Үйлдэл сонгох", ["Тайлан татах", "Мэдэгдэл илгээх", "Засвар төлөвлөх", "Яаралтай зогсолт"])
+        if st.button("Шийдвэрийг баталгаажуулах"):
+            st.warning(f"АНХААР: '{action}' үйлдэл Глобал түвшинд идэвхжлээ.")
 
-# 6. Advanced Visuals (Sophisticated Layout)
-col_a, col_b = st.columns([2, 1])
-
-with col_a:
-    st.subheader("Asset Performance vs. ESG Investment Matrix")
-    # Bubble chart for complex data visualization
-    fig1 = px.scatter(df, x="Compliance_Score", y="Risk_Level", 
-                     size="Investment_ESG", color="Asset",
-                     hover_name="Asset", log_x=False, size_max=60,
-                     template="plotly_white", title="Performance Correlation")
-    fig1.update_layout(showlegend=False)
-    st.plotly_chart(fig1, use_container_width=True)
-
-with col_b:
-    st.subheader("Regional Risk Benchmarking")
-    # Radar chart for sophisticated comparison
-    fig2 = go.Figure(data=go.Scatterpolar(
-      r=df['Risk_Level'],
-      theta=df['Asset'],
-      fill='toself',
-      line_color='#1e293b'
-    ))
-    fig2.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 6])),
-                      showlegend=False, height=400)
-    st.plotly_chart(fig2, use_container_width=True)
-
-# 7. Predictive Insight Table
-st.subheader("AI-Driven Predictive Risk Forecast")
-st.table(df[['Asset', 'Compliance_Score', 'AI_Forecast_Trend']].sort_values(by='AI_Forecast_Trend', ascending=False))
-
-st.caption("Strategic Intelligence Division | Internal Use Only")
+with tab2:
+    st.subheader("Уурхайн үндсэн техникийн паркийн төлөв")
+    # Техник бүрийн мэдээллийг Card хэлбэрээр харуулах
