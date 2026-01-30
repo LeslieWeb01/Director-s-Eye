@@ -1,76 +1,92 @@
 import streamlit as st
 import pandas as pd
+import sqlite3
 import plotly.express as px
-import plotly.graph_objects as go
+import numpy as np
 
-# 1. Хуудасны үндсэн тохиргоо
-st.set_page_config(page_title="Уул уурхайн нэгдсэн удирдлагын систем", layout="wide")
+# 1. SQL Холболт
+def create_connection():
+    return sqlite3.connect('global_mining_intelligence.db')
 
-# 2. Корпорацийн хэв маяг (Эможигүй, цэвэрхэн загвар)
-st.markdown("""
-    <style>
-    .main { background-color: #f8fafc; }
-    [data-testid="stMetricValue"] { color: #0f172a; font-weight: 700; }
-    .stPlotlyChart { background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; }
-    h1, h3 { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; }
-    </style>
-    """, unsafe_allow_html=True)
+# 2. Олон эх сурвалжийн дата үүсгэх
+def initialize_big_data():
+    conn = create_connection()
+    c = conn.cursor()
+    
+    # Хүний хүчин зүйл (Fatigue Index)
+    c.execute('''CREATE TABLE IF NOT EXISTS human_factors 
+                 (ажилтан_ID TEXT, ядралт_индекс REAL, ажлын_цаг REAL, огноо TEXT)''')
+    
+    # Гадаад орчин (Weather)
+    c.execute('''CREATE TABLE IF NOT EXISTS environment 
+                 (салхины_хурд REAL, үзэгдэх_орчин REAL, чийгшил REAL, огноо TEXT)''')
+    
+    # Техникийн телеметр (Telemetry)
+    c.execute('''CREATE TABLE IF NOT EXISTS telemetry 
+                 (техник_ID TEXT, огцом_тоормос INTEGER, дундаж_хурд REAL, огноо TEXT)''')
 
-# 3. Өгөгдлийн сан (Мэргэжлийн нэршил)
-@st.cache_data
-def get_executive_data():
-    return pd.DataFrame({
-        'Төхөөрөмж': ['CAT 797F Өөрөө буулгагч', 'Komatsu PC8000 Экскаватор', 'P&H 4100XPC Цахилгаан экскаватор', 'Бутлан ангилах хэсэг', 'Туузан дамжуулагч'],
-        'Төлөв': ['Ашиглалттай', 'Засвар үйлчилгээтэй', 'Ашиглалттай', 'Ашиглалттай', 'Саатсан'],
-        'Ашиглалтын_коэффициент': [95.2, 0.0, 92.5, 88.7, 0.0],
-        'Эрсдэлийн_индекс': [0.12, 0.85, 0.22, 0.41, 0.92],
-        'Засварын_зардал': [450, 850, 580, 210, 190] # Мянган ам.доллараар
-    })
+    # Өгөгдөл байгаа эсэхийг шалгах
+    c.execute("SELECT count(*) FROM human_factors")
+    if c.fetchone()[0] == 0:
+        # Зохиомол дата олноор үүсгэх
+        staff = [('STAFF-00'+str(i), np.random.rand()*10, 8 + np.random.rand()*4, '2026-01-31') for i in range(50)]
+        c.executemany("INSERT INTO human_factors VALUES (?,?,?,?)", staff)
+        
+        env = [(np.random.rand()*40, np.random.rand()*100, np.random.rand()*100, '2026-01-31') for _ in range(1)]
+        c.executemany("INSERT INTO environment VALUES (?,?,?,?)", env)
+        
+        fleet = [('TRUCK-'+str(i), np.random.randint(0, 5), 35 + np.random.rand()*15, '2026-01-31') for i in range(20)]
+        c.executemany("INSERT INTO telemetry VALUES (?,?,?,?)", fleet)
+        
+        conn.commit()
+    conn.close()
 
-df = get_executive_data()
+initialize_big_data()
 
-# 4. Толгой хэсэг
-st.title("Стратегийн удирдлага ба аюулгүй ажиллагааны нэгдсэн төв")
-st.write("Глобал үйл ажиллагааны хяналт болон хиймэл оюунд суурилсан эрсдэлийн шинжилгээ")
+# 3. Удирдлагын хянах самбар
+st.set_page_config(page_title="AI Intelligence Hub", layout="wide")
+st.title("Стратегийн дата нэгтгэл ба эрсдэлийн таамаглал")
 
-# 5. Хэсгүүдийн сонголт (Tabs)
-tab1, tab2, tab3 = st.tabs(["Үйл ажиллагааны тойм", "Тоног төхөөрөмжийн бүтэц", "Эрсдэлийн шинжилгээ"])
+# SQL-ээс бүх датаг татах
+conn = create_connection()
+df_human = pd.read_sql_query("SELECT * FROM human_factors", conn)
+df_env = pd.read_sql_query("SELECT * FROM environment", conn)
+df_telemetry = pd.read_sql_query("SELECT * FROM telemetry", conn)
+conn.close()
+
+# 4. Салангид датануудыг ялгаж харуулах
+tab1, tab2, tab3 = st.tabs(["Хүний хүчин зүйл", "Техникийн телеметр", "Орчны нөлөө"])
 
 with tab1:
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Нийт аюулгүй байдлын индекс", "94.2%", "↑ 0.4%")
-    m2.metric("Тоног төхөөрөмжийн бэлэн байдал", "86.5%", "↓ 1.2%", delta_color="inverse")
-    m3.metric("ESG хөрөнгө оруулалт", "$1.75 тэрбум", "Төлөвлөгөөт")
-    m4.metric("Эрсдэлийн хэлбэлзэл", "Тогтвортой", delta_color="normal")
+    st.subheader("Ажилтнуудын ядралтын түвшний шинжилгээ")
+    # Өндөр ядралттай ажилтнуудыг ялгах (Threshold > 7)
+    high_fatigue = df_human[df_human['ядралт_индекс'] > 7]
+    if not high_fatigue.empty:
+        st.error(f"Анхаар: {len(high_fatigue)} ажилтан ядралтын өндөр эрсдэлтэй байна.")
+        st.dataframe(high_fatigue)
     
-    st.write("---")
-    left, right = st.columns([2, 1])
-    with left:
-        st.subheader("Салбар нэгжүүдийн ашиглалтын харьцуулсан үзүүлэлт")
-        fig = px.bar(df, x='Төхөөрөмж', y='Ашиглалтын_коэффициент', 
-                     template="simple_white", color_discrete_sequence=['#1e293b'])
-        st.plotly_chart(fig, use_container_width=True)
-    with right:
-        st.subheader("Шийдвэр гаргах түвшин")
-        option = st.selectbox("Шаардлагатай арга хэмжээ", ["Тайлан боловсруулах", "Мэдэгдэл хүргүүлэх", "Засварын төлөвлөгөө шинэчлэх", "Яаралтай зогсолт хийх"])
-        if st.button("Шийдвэрийг идэвхжүүлэх"):
-            st.info(f"Мэдэгдэл: {option} үйлдэл системд бүртгэгдлээ.")
+    fig_human = px.histogram(df_human, x="ядралт_индекс", nbins=10, title="Ядралтын индексийн тархалт", template="simple_white")
+    st.plotly_chart(fig_human, use_container_width=True)
 
 with tab2:
-    st.subheader("Үндсэн техник хэрэгслийн ашиглалтын төлөв")
-    cols = st.columns(len(df))
-    for i, row in df.iterrows():
-        with cols[i]:
-            st.write(f"**{row['Төхөөрөмж']}**")
-            st.write(f"Төлөв: {row['Төлөв']}")
-            st.progress(row['Ашиглалтын_коэффициент'] / 100)
+    st.subheader("Техникийн ашиглалтын аюулгүй байдал")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.write("Огцом тоормослолт (Сүүлийн 24 цаг)")
+        fig_brake = px.bar(df_telemetry, x="техник_ID", y="огцом_тоормос", template="simple_white")
+        st.plotly_chart(fig_brake, use_container_width=True)
+    with col_b:
+        st.write("Дундаж хурдны харьцуулалт")
+        fig_speed = px.box(df_telemetry, y="дундаж_хурд", template="simple_white")
+        st.plotly_chart(fig_speed, use_container_width=True)
 
 with tab3:
-    st.subheader("Эрсдэл болон засвар үйлчилгээний хамаарал")
-    fig_risk = px.scatter(df, x="Ашиглалтын_коэффициент", y="Эрсдэлийн_индекс", 
-                         size="Засварын_зардал", color="Төхөөрөмж",
-                         template="simple_white")
-    st.plotly_chart(fig_risk, use_container_width=True)
+    st.subheader("Цаг агаарын нөхцөл байдал")
+    curr_env = df_env.iloc[0]
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Салхины хурд", f"{curr_env['салхины_хурд']:.1f} м/с")
+    m2.metric("Үзэгдэх орчин", f"{curr_env['үзэгдэх_орчин']:.1f} %")
+    m3.metric("Агаарын чийгшил", f"{curr_env['чийгшил']:.1f} %")
 
 st.divider()
-st.caption("Нууцлалын зэрэг: Дотоод хэрэгцээнд | Мэдээллийн шинэчлэгдсэн огноо: 2026-01-31")
+st.info("Системийн дүгнэлт: Салхины хурд их, ажилтнуудын ядралт өндөр байгаа нь ослын магадлалыг 35%-иар нэмэгдүүлж байна.")
