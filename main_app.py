@@ -1,56 +1,52 @@
 import streamlit as st
+import pandas as pd
 
-# 1. Хуудасны үндсэн тохиргоо (Apple + Vantiq Aesthetic)
-st.set_page_config(page_title="Mining Intelligence Hub", layout="wide")
+# 1. Хуудасны тохиргоо
+st.set_page_config(page_title="Director's Eye | HSE Tech", layout="wide")
 
+# 2. Apple-ийн цэвэрхэн дизайн (Glassmorphism)
 st.markdown("""
     <style>
-    .main { background-color: #f8fafc; }
-    .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(15px);
-        border-radius: 24px;
-        padding: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    .main { background-color: #f0f2f6; }
+    .stMetric { 
+        background-color: #ffffff; 
+        padding: 15px; 
+        border-radius: 20px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Header - Сайн байна уу, Захирал аа
-st.title("Өглөөний мэнд, Захирал аа")
-st.write("Өнөөдөр системд 2 онцгой мэдэгдэл бүртгэгдсэн байна.")
+# 3. Header - Алсын хараа: Global Director
+st.title("👨‍💼 Director's Eye Control Center")
+st.subheader("Уул уурхайн техникийн нэгдсэн хяналтын самбар")
 
-# 3. Main Layout
+# 4. Dashboard Layout
 col1, col2 = st.columns([1.5, 2.5])
 
 with col1:
-    # Дижитал ихэр (Digital Twin) хэсэг
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("Техникийн Дижитал Ихэр: 7192 ӨМӨ")
-    # Таны ирүүлсэн CAT ачааны машины зургийг энд байрлуулна
-    st.image("upscalemedia-transformed.jpg", use_container_width=True)
+    st.info("📦 Техникийн мэдээлэл")
+    st.write("**Улсын дугаар:** 7192 ӨМӨ")
+    st.write("**Төрөл:** CAT 793D (Haul Truck)")
     
-    st.metric("Хөдөлгүүрийн ажиллагаа", "98.4%", "Тогтвортой")
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Зургийн алдаанаас сэргийлэх логик
+    try:
+        st.image("upscalemedia-transformed.jpg", caption="Дижитал Ихэр", use_container_width=True)
+    except:
+        st.warning("🖼️ Зургийн файл GitHub дээр олдохгүй байна. (Upload хийх шаардлагатай)")
 
 with col2:
-    # Мэдрэгчийн шинжилгээ (Vantiq Logic)
-    st.subheader("Техникийн ерөнхий шинжилгээ")
+    st.success("📊 Бодит цагийн мэдрэгчийн өгөгдөл (Sense)")
     
-    m_col1, m_col2, m_col3 = st.columns(3)
-    with m_col1:
-        st.metric("Түлшний түвшин", "1,240 Л", "Хэвийн")
-    with m_col2:
-        st.metric("Дугуйн даралт", "116 PSI", "+2 PSI")
-    with m_col3:
-        st.metric("Тосны халалт", "102°C", "Анхаар!", delta_color="inverse")
-
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Хөдөлгүүр", "94°C", "Хэвийн")
+    m2.metric("Түлш", "840 Л", "-12.5%")
+    m3.metric("Дугуй", "114 PSI", "Тогтвортой")
+    
     st.divider()
     
-    # "Schedule" болон "Alerts" хэсэг (Эрүүл мэндийн апп-ын загвараар)
-    st.subheader("Төлөвлөгөөт засвар үйлчилгээ")
-    st.info("🔧 Дараагийн тос солилт: 48 цагийн дараа (HT-104)")
-    st.warning("⚠️ Сэрэмжлүүлэг: Зүүн хойд дугуйн элэгдэл 85%-д хүрсэн байна.")
+    st.error("⚠️ AI Таамаглал & Сэрэмжлүүлэг (Analyze)")
+    st.write("* **Predictive AI:** Ойрын 24 цагт гидравлик системд саатал гарах магадлал 15% байна.")
+    st.write("* **HSE Alert:** Жолоочийн ядралтын индекс өсөх хандлагатай байна.")
 
-st.caption("Strategic Data Fusion | AI Orchestrator v2.0")
+st.caption("Developed by Future Global Director | 2026")
