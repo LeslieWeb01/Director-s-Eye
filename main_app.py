@@ -1,51 +1,73 @@
 import streamlit as st
 
-# 1. Page Configuration
-st.set_page_config(page_title="Director's Eye | Strategic HSE Intelligence", layout="wide")
+# 1. Enterprise Level Configuration
+st.set_page_config(
+    page_title="Director's Eye | Operational Intelligence",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# 2. Corporate Design (Clean Minimalist)
+# 2. Modern UI Styling (No Emojis, Minimalist)
 st.markdown("""
     <style>
-    .reportview-container { background: #fdfdfd; }
-    .metric-card {
+    .stApp { background-color: #f4f7f9; }
+    .main-header { font-size: 24px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+    .data-card {
         background-color: #ffffff;
-        border: 1px solid #e1e4e8;
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. Executive Header
-st.title("Strategic HSE Control Center")
-st.write("Current Focus: Predictive Fleet Maintenance and Operational Safety")
+# 3. Sidebar Navigation (Professional Menu)
+with st.sidebar:
+    st.markdown("### Executive Navigation")
+    st.radio("Dashboard View", ["Fleet Overview", "HSE Analytics", "Risk Assessment", "ESG Reporting"])
+    st.divider()
+    st.caption("Strategic Tool for Global Director Excellence")
 
-# 4. Main Interface Layout
-col_twin, col_data = st.columns([1.5, 2.5])
+# 4. Main Dashboard Header
+st.markdown('<p class="main-header">Strategic HSE Control Center: Rocanville Operations</p>', unsafe_allow_html=True)
 
-with col_twin:
-    st.header("Asset Digital Twin: 7192 OMO")
+# 5. Core Interface Layout
+left_panel, right_panel = st.columns([1.5, 2.5])
+
+with left_panel:
+    st.markdown('<div class="data-card">', unsafe_allow_html=True)
+    st.subheader("Asset Digital Twin: Unit 7192")
     
-    # Error Handling for Image Asset
+    # Visualization Logic
     try:
-        st.image("upscalemedia-transformed.jpg", 
-                 caption="CAT 793D Telemetry Mapping", 
-                 use_container_width=True)
-    except FileNotFoundError:
-        st.error("Status: Visualization Asset Missing. Please upload 'upscalemedia-transformed.jpg' to the GitHub root directory.")
+        st.image("upscalemedia-transformed.jpg", caption="CAT 793D Telemetry Mapping", use_container_width=True)
+    except Exception:
+        st.error("System Notice: Technical visualization asset currently unavailable in root directory.")
+    
+    st.metric("Engine Health Status", "98.4%", "Stable")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col_data:
-    st.header("Predictive Analytics Stream")
-    
-    # Core Metrics
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Engine Health Index", "98.4%", "Stable")
-    m2.metric("Fuel Optimization", "1,240 L", "-2.1%")
-    m3.metric("Safety Fatigue Score", "0.12", "Normal")
+with right_panel:
+    # Key Performance Indicators (KPIs)
+    st.subheader("Operational Metrics")
+    kpi1, kpi2, kpi3 = st.columns(3)
+    kpi1.metric("Mined (MT)", "49,976", "Plan: 75,000")
+    kpi2.metric("Engagement Score", "318", "Normal")
+    kpi3.metric("Loading Efficiency", "65%", "-5%")
 
-    st.markdown("---")
+    st.divider()
+
+    # Predictive Intelligence Section
+    st.subheader("Actionable Diagnostics")
     
-    # Strategic Insights (Vantiq Logic: Sense-Analyze-Act)
-    st.subheader("Actionable Intelligence")
+    diagnostics_log = (
+        "Analysis: Predictive AI has identified a potential hydraulic variance in the Rear Left Cylinder. "
+        "Intervention is recommended within 48 operating hours to maintain operational excellence."
+    )
+    st.text_area("System Log Output", value=diagnostics_log, height=120)
     
-    st.text_area("System Diagnostics
+    # ESG and Strategic Alignment
+    st.info("Strategic Alignment: Current operations are 100% compliant with Regional HSE and ESG sustainability standards.")
+
+st.caption("Director's Eye v2.0 | Integrated Safety Tech Platform")
