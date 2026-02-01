@@ -1,52 +1,51 @@
 import streamlit as st
-import pandas as pd
 
-# 1. Хуудасны тохиргоо
-st.set_page_config(page_title="Director's Eye | HSE Tech", layout="wide")
+# 1. Page Configuration
+st.set_page_config(page_title="Director's Eye | Strategic HSE Intelligence", layout="wide")
 
-# 2. Apple-ийн цэвэрхэн дизайн (Glassmorphism)
+# 2. Corporate Design (Clean Minimalist)
 st.markdown("""
     <style>
-    .main { background-color: #f0f2f6; }
-    .stMetric { 
-        background-color: #ffffff; 
-        padding: 15px; 
-        border-radius: 20px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    .reportview-container { background: #fdfdfd; }
+    .metric-card {
+        background-color: #ffffff;
+        border: 1px solid #e1e4e8;
+        padding: 20px;
+        border-radius: 12px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. Header - Алсын хараа: Global Director
-st.title("👨‍💼 Director's Eye Control Center")
-st.subheader("Уул уурхайн техникийн нэгдсэн хяналтын самбар")
+# 3. Executive Header
+st.title("Strategic HSE Control Center")
+st.write("Current Focus: Predictive Fleet Maintenance and Operational Safety")
 
-# 4. Dashboard Layout
-col1, col2 = st.columns([1.5, 2.5])
+# 4. Main Interface Layout
+col_twin, col_data = st.columns([1.5, 2.5])
 
-with col1:
-    st.info("📦 Техникийн мэдээлэл")
-    st.write("**Улсын дугаар:** 7192 ӨМӨ")
-    st.write("**Төрөл:** CAT 793D (Haul Truck)")
+with col_twin:
+    st.header("Asset Digital Twin: 7192 OMO")
     
-    # Зургийн алдаанаас сэргийлэх логик
+    # Error Handling for Image Asset
     try:
-        st.image("upscalemedia-transformed.jpg", caption="Дижитал Ихэр", use_container_width=True)
-    except:
-        st.warning("🖼️ Зургийн файл GitHub дээр олдохгүй байна. (Upload хийх шаардлагатай)")
+        st.image("upscalemedia-transformed.jpg", 
+                 caption="CAT 793D Telemetry Mapping", 
+                 use_container_width=True)
+    except FileNotFoundError:
+        st.error("Status: Visualization Asset Missing. Please upload 'upscalemedia-transformed.jpg' to the GitHub root directory.")
 
-with col2:
-    st.success("📊 Бодит цагийн мэдрэгчийн өгөгдөл (Sense)")
+with col_data:
+    st.header("Predictive Analytics Stream")
     
+    # Core Metrics
     m1, m2, m3 = st.columns(3)
-    m1.metric("Хөдөлгүүр", "94°C", "Хэвийн")
-    m2.metric("Түлш", "840 Л", "-12.5%")
-    m3.metric("Дугуй", "114 PSI", "Тогтвортой")
-    
-    st.divider()
-    
-    st.error("⚠️ AI Таамаглал & Сэрэмжлүүлэг (Analyze)")
-    st.write("* **Predictive AI:** Ойрын 24 цагт гидравлик системд саатал гарах магадлал 15% байна.")
-    st.write("* **HSE Alert:** Жолоочийн ядралтын индекс өсөх хандлагатай байна.")
+    m1.metric("Engine Health Index", "98.4%", "Stable")
+    m2.metric("Fuel Optimization", "1,240 L", "-2.1%")
+    m3.metric("Safety Fatigue Score", "0.12", "Normal")
 
-st.caption("Developed by Future Global Director | 2026")
+    st.markdown("---")
+    
+    # Strategic Insights (Vantiq Logic: Sense-Analyze-Act)
+    st.subheader("Actionable Intelligence")
+    
+    st.text_area("System Diagnostics
